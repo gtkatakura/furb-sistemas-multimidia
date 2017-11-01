@@ -1,0 +1,37 @@
+{
+  "name": "furb-sistemas-multimidia",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/gtkatakura/furb-sistemas-multimidia.git",
+  "author": "gtkatakura <gt.katakura@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "all-contributors-cli": "^4.5.1",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "eslint": "^4.10.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-react": "^7.4.0",
+    "html-webpack-plugin": "^2.30.1",
+    "husky": "^0.14.3",
+    "validate-commit-msg": "^2.14.0",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.3"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-hot-loader": "^3.0.0"
+  },
+  "scripts": {
+    "commitmsg": "validate-commit-msg",
+    "build": "webpack",
+    "dev": "webpack-dev-server"
+  }
+}
