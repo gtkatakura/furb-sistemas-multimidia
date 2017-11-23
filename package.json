@@ -29,6 +29,8 @@
     "babel-polyfill": "^6.26.0",
     "express": "3.4.7",
     "fabric": "^1.7.19",
+    "lodash": "^4.17.4",
+    "prop-types": "^15.6.0",
     "react": "^15.0.0",
     "react-dom": "^15.0.0",
     "react-fabricjs": "^0.1.6",

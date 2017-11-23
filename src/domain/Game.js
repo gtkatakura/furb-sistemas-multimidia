@@ -1,11 +1,13 @@
 import React from 'react';
-import { Canvas, Rect, Triangle, Polygon } from 'react-fabricjs';
+import PropTypes from 'prop-types';
+import { Canvas, Polygon } from 'react-fabricjs';
+import _ from 'lodash';
 
 const style = {
   border: '1px solid #000000',
 };
 
-export default class Game extends React.Component {
+class Game extends React.Component {
   onMoving() {
     if (this) {
       this.canvas.forEachObject(obj => {
@@ -22,30 +24,40 @@ export default class Game extends React.Component {
   }
 
   render() {
-    const points = [
-      { x: 0, y: 0 },
-      { x: 0, y: 100 },
-      { x: 100, y: 100 },
-    ];
+    const polygons = this.props.exercise.map((object, key) => (
+      <Polygon
+        key={key.toString()}
+        object={Object.assign({}, _.cloneDeep(object), {
+          selectable: false,
+          fill: 'black',
+        })}
+      />
+    ));
 
-    const points2 = [
-      { x: 0, y: 0 },
-      { x: 0, y: 100 },
-      { x: 100, y: 100 },
-    ];
+    const objects = _.drop(this.props.exercise, 1).map((object, key) => (
+      <Polygon
+        key={key.toString()}
+        object={Object.assign({}, _.cloneDeep(object), {
+          top: _.random(0, 200) + 200,
+          left: _.random(0, 200) + 200,
+        })}
+        onMoving={this.onMoving}
+      />
+    ));
 
     return (
       <div style={style}>
         <Canvas width={800} height={600}>
-          <Rect selectable={false} left={20} top={20} width={200} height={200} fill="red" />
-          <Triangle selectable={false} left={220} top={120} width={200} height={100} angle={180} fill="blue" />
-          <Triangle selectable={false} left={70} top={20} width={100} height={50} angle={90} fill="yellow" />
-          <Rect selectable={false} left={70} top={70} width={70} height={70} angle={45} fill="cyan" />
-          <Polygon object={{ selectable: false, points, left: 20, top: 120, fill: "black" }} />
-          <Polygon object={{ points: points2, left: 400, top: 400, fill:"purple" }} onMoving={this.onMoving} />
-          <Triangle hasControls={false} left={320} top={420} width={200} height={100} angle={180} fill="purple" onMoving={this.onMoving} />
+          {polygons}
+          {objects}
         </Canvas>
       </div>
     );
   }
 }
+
+Game.propTypes = {
+  exercise: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
+
+export default Game;
