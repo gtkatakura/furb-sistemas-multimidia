@@ -1,5 +1,6 @@
 import React from 'react';
+import Game from '../domain/Game';
 
-const Root = () => <h1>Hello World!!</h1>;
+const Root = () => <Game />;
 
 export default Root;
