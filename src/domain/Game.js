@@ -3,9 +3,7 @@ import PropTypes from 'prop-types';
 import { Canvas, Polygon } from 'react-fabricjs';
 import _ from 'lodash';
 
-const style = {
-  border: '1px solid #000000',
-};
+import './Game.css';
 
 class Game extends React.Component {
   onMoving() {
@@ -46,7 +44,7 @@ class Game extends React.Component {
     ));
 
     return (
-      <div style={style}>
+      <div className="border-solid">
         <Canvas width={800} height={600}>
           {polygons}
           {objects}
