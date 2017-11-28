@@ -3,22 +3,20 @@ import PropTypes from 'prop-types';
 import { Canvas, Polygon } from 'react-fabricjs';
 import _ from 'lodash';
 
-import './Game.css';
+import './index.less';
 
 class Game extends React.Component {
   onMoving() {
-    if (this) {
-      this.canvas.forEachObject(obj => {
-        if (obj === this) return;
+    this.canvas.forEachObject(obj => {
+      if (obj === this) return;
 
-        if (Math.abs(obj.top - this.top) < 10 && Math.abs(obj.left - this.left) < 10) {
-          this.set({
-            top: obj.top,
-            left: obj.left,
-          });
-        }
-      });
-    }
+      if (Math.abs(obj.top - this.top) < 10 && Math.abs(obj.left - this.left) < 10) {
+        this.set({
+          top: obj.top,
+          left: obj.left,
+        });
+      }
+    });
   }
 
   render() {
@@ -44,7 +42,7 @@ class Game extends React.Component {
     ));
 
     return (
-      <div className="border-solid">
+      <div id="game">
         <Canvas width={800} height={600}>
           {polygons}
           {objects}

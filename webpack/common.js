@@ -18,6 +18,7 @@ module.exports = {
   shared: {
     entry: [
       'babel-polyfill',
+      'normalize-css',
       `${paths.src}/index`,
     ],
     output: {
@@ -32,10 +33,10 @@ module.exports = {
           exclude: /node_modules/,
         },
         {
-          test: /\.css$/,
+          test: /\.(css|less)$/,
           use: ExtractTextPlugin.extract({
             fallback: 'style-loader',
-            use: 'css-loader',
+            use: ['css-loader', 'less-loader'],
           }),
         },
       ],
