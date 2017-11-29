@@ -5,11 +5,24 @@ const HtmlPlugin = require('html-webpack-plugin');
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const merge = require('lodash/merge');
 
-const { shared, paths, loaders } = require('./common');
+const {
+  shared,
+  paths,
+  loaders,
+  rules,
+} = require('./common');
 
 module.exports = merge(shared, {
   output: {
     filename: '[name]-[hash].js',
+  },
+  module: {
+    rules: [
+      ...shared.module.rules,
+      merge(rules.style, {
+        use: ExtractTextPlugin.extract(rules.style.use),
+      }),
+    ],
   },
   plugins: [
     new CleanPlugin(['dist'], {

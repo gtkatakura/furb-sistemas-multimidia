@@ -6,6 +6,7 @@ import './index.less';
 
 const Menu = () => (
   <BurgerMenu>
+    <Link to="/">Home</Link>
     <Link to="/exercises">Exercícios</Link>
   </BurgerMenu>
 );

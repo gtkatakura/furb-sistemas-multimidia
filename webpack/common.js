@@ -1,5 +1,3 @@
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
 const paths = {
   root: `${__dirname}/..`,
   src: `${__dirname}/../src`,
@@ -13,6 +11,15 @@ module.exports = {
       template: `${paths.src}/index.html`,
       filename: 'index.html',
       inject: 'body',
+    },
+  },
+  rules: {
+    style: {
+      test: /\.(css|less)$/,
+      use: {
+        fallback: 'style-loader',
+        use: ['css-loader', 'less-loader'],
+      },
     },
   },
   shared: {
@@ -31,13 +38,6 @@ module.exports = {
           test: /.js$/,
           loader: 'babel-loader',
           exclude: /node_modules/,
-        },
-        {
-          test: /\.(css|less)$/,
-          use: ExtractTextPlugin.extract({
-            fallback: 'style-loader',
-            use: ['css-loader', 'less-loader'],
-          }),
         },
       ],
     },

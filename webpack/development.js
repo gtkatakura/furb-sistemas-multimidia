@@ -1,21 +1,34 @@
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlPlugin = require('html-webpack-plugin');
 const merge = require('lodash/merge');
 
-const { shared, loaders } = require('./common');
+const { shared, loaders, rules } = require('./common');
 
 module.exports = merge(shared, {
   devtool: 'source-map',
   entry: [
     'react-hot-loader/patch',
+    'webpack-hot-middleware/client',
     ...shared.entry,
   ],
+  output: {
+    publicPath: '/',
+  },
+  module: {
+    rules: [
+      ...shared.module.rules,
+      merge(rules.style, {
+        use: [
+          rules.style.use.fallback,
+          ...rules.style.use.use,
+        ],
+      }),
+    ],
+  },
   plugins: [
+    new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new ExtractTextPlugin({
-      filename: 'styles.css',
-    }),
+    new webpack.NoEmitOnErrorsPlugin(),
     new HtmlPlugin(loaders.html),
   ],
   devServer: {
