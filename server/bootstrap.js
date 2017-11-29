@@ -30,11 +30,16 @@ const createServer = path => {
 
     socket.on('observer:start', observableId => {
       socket.join(`observable:${observableId}`);
-      sockets[observableId].emit('observer:start', socket.id);
+
+      if (sockets[observableId]) {
+        sockets[observableId].emit('observer:start', socket.id);
+      }
     });
 
     socket.on('observable:bootstrap', ({ observerId, objects }) => {
-      sockets[observerId].emit('observable:bootstrap', objects);
+      if (sockets[observerId]) {
+        sockets[observerId].emit('observable:bootstrap', objects);
+      }
     });
 
     socket.on('observable:moving', object => {
