@@ -2,7 +2,6 @@ const webpack = require('webpack');
 const CleanPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlPlugin = require('html-webpack-plugin');
-const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const merge = require('lodash/merge');
 
 const {
@@ -13,6 +12,7 @@ const {
 } = require('./common');
 
 module.exports = merge(shared, {
+  devtool: 'cheap-eval-source-map',
   output: {
     filename: '[name]-[hash].js',
   },
@@ -39,7 +39,6 @@ module.exports = merge(shared, {
     new HtmlPlugin(merge(loaders.html, {
       minify: { collapseWhitespace: true },
     })),
-    new LodashModuleReplacementPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
