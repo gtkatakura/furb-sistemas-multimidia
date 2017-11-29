@@ -36,7 +36,7 @@ export default class GameSet extends React.Component {
           activeClassName="active"
           onPageChange={this.onPageChange.bind(this)}
         />
-        <Game exercise={this.state.exercise} />
+        <Game exercise={this.state.exercise} height={600} width={600} />
       </div>
     );
   }
