@@ -1,13 +1,31 @@
 body {
   background: #b4bad2;
+  height: 100%;
+  width: 100%;
+  min-height: 550px;
+}
+
+#app {
+  position: absolute;
+  height: 100%;
+  width: 100%;
 }
 
 main {
   height: 100%;
-  padding: 3em 2em;
+  width: 100%;
+  vertical-align: middle;
   text-align: center;
 }
 
-#outer-container {
-  height: '100%';
+div.inner {
+  display: inline-block;
+  width: 200px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.margin-top {
+  margin-top: 10px;
 }
