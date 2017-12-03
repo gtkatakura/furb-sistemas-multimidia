@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Canvas, Polygon } from 'react-fabricjs';
 import _ from 'lodash';
-import io from 'socket.io-client';
+import { socketConnect } from 'socket.io-react';
 
 import './index.less';
 
@@ -11,13 +11,13 @@ class Game extends React.Component {
     super();
 
     this.state = { exercise };
+  }
 
-    this.socket = io();
-
-    this.socket.on('observer:start', observerId => {
+  componentWillMount() {
+    this.props.socket.on('observer:start', observerId => {
       const objects = this.canvas.getObjects().map(object => _.assign({}, object));
 
-      this.socket.emit('observable:bootstrap', {
+      this.props.socket.emit('observable:bootstrap', {
         observerId,
         objects,
       });
@@ -26,10 +26,6 @@ class Game extends React.Component {
 
   componentWillReceiveProps({ exercise }) {
     this.setState({ exercise });
-  }
-
-  componentWillUnmount() {
-    this.socket.close();
   }
 
   onMoving(game) {
@@ -45,7 +41,7 @@ class Game extends React.Component {
         }
       });
 
-      game.socket.emit('observable:moving', _.assign({}, this));
+      game.props.socket.emit('observable:moving', _.assign({}, this));
     }
   }
 
@@ -141,4 +137,4 @@ Game.propTypes = {
   width: PropTypes.number.isRequired,
 };
 
-export default Game;
+export default socketConnect(Game);

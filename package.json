@@ -49,7 +49,8 @@
     "react-paginate": "^5.0.0",
     "react-router-dom": "^4.2.2",
     "socket.io": "^2.0.4",
-    "socket.io-client": "^2.0.4"
+    "socket.io-client": "^2.0.4",
+    "socket.io-react": "^1.2.0"
   },
   "scripts": {
     "postinstall": "npm run build",

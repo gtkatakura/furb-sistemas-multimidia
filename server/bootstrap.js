@@ -20,19 +20,24 @@ const createServer = path => {
   });
 
   io.on('connection', socket => {
-    sockets[socket.id] = socket;
-    console.log(`io: a user connected - ${socket.id}`);
+    socket.on('login', userName => {
+      sockets[userName] = socket;
+      socket.name = userName;
+
+      io.emit('login', Object.keys(sockets));
+      console.log(`io: a user connected - ${userName}`);
+    });
 
     socket.on('disconnect', () => {
-      delete sockets[socket.id];
-      console.log(`io: a user disconnected - ${socket.id}`);
+      delete sockets[socket.name];
+      console.log(`io: a user disconnected - ${socket.name}`);
     });
 
     socket.on('observer:start', observableId => {
       socket.join(`observable:${observableId}`);
 
       if (sockets[observableId]) {
-        sockets[observableId].emit('observer:start', socket.id);
+        sockets[observableId].emit('observer:start', socket.name);
       }
     });
 
@@ -43,7 +48,7 @@ const createServer = path => {
     });
 
     socket.on('observable:moving', object => {
-      io.to(`observable:${socket.id}`).emit('observable:moving', object);
+      io.to(`observable:${socket.name}`).emit('observable:moving', object);
     });
   });
 

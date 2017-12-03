@@ -1,8 +1,9 @@
 import React from 'react';
+import { socketConnect } from 'socket.io-react';
 
 import Watch from '../Game/Watch';
 
-export default class Rank extends React.Component {
+class Rank extends React.Component {
   constructor() {
     super();
 
@@ -17,6 +18,10 @@ export default class Rank extends React.Component {
     const users = await response.json();
 
     this.setState({ users });
+
+    this.props.socket.on('login', users => {
+      this.setState({ users });
+    });
   }
 
   onClick(currentUser) {
@@ -43,3 +48,5 @@ export default class Rank extends React.Component {
     );
   }
 }
+
+export default socketConnect(Rank);

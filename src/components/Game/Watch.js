@@ -1,15 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Canvas, Polygon } from 'react-fabricjs';
-import io from 'socket.io-client';
+import { socketConnect } from 'socket.io-react';
 
 import './index.less';
 
 class Watch extends React.Component {
   constructor() {
     super();
-
-    this.socket = io();
 
     this.state = {
       objects: [],
@@ -21,26 +18,19 @@ class Watch extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.socket.close();
-    this.socket = io();
-
     this.startObserver(nextProps);
   }
 
-  componentWillUnmount() {
-    this.socket.close();
-  }
-
   startObserver(props) {
-    this.socket.emit('observer:start', props.userName);
+    this.props.socket.emit('observer:start', props.userName);
 
-    this.socket.on('observable:bootstrap', objects => {
+    this.props.socket.on('observable:bootstrap', objects => {
       this.setState({
         objects,
       });
     });
 
-    this.socket.on('observable:moving', object => {
+    this.props.socket.on('observable:moving', object => {
       const local = this.canvas.getObjects().find(currentObject => currentObject.reference === object.reference);
 
       local.set({
@@ -70,8 +60,4 @@ class Watch extends React.Component {
   }
 }
 
-Watch.propTypes = {
-  userName: PropTypes.string.isRequired,
-};
-
-export default Watch;
+export default socketConnect(Watch);
