@@ -11,11 +11,12 @@ export default class App extends React.Component {
     super();
 
     this.state = {
-      userName: null,
+      userName: sessionStorage.getItem('userName'),
     };
   }
 
   onStart(userName) {
+    sessionStorage.setItem('userName', userName);
     this.setState({ userName });
   }
 

@@ -1,7 +1,9 @@
 import React from 'react';
 import { socketConnect } from 'socket.io-react';
+import _ from 'lodash';
 
 import Watch from '../Game/Watch';
+import './index.less';
 
 class Rank extends React.Component {
   constructor() {
@@ -19,7 +21,7 @@ class Rank extends React.Component {
 
     this.setState({ users });
 
-    this.props.socket.on('login', users => {
+    this.props.socket.on('users:update', users => {
       this.setState({ users });
     });
   }
@@ -31,18 +33,33 @@ class Rank extends React.Component {
   }
 
   render() {
-    const lines = this.state.users.map((user, key) => (
-      <a
-        key={key.toString()}
-        onClick={this.onClick.bind(this, user)}
-      >
-        {user}<br />
-      </a>
+    const userName = sessionStorage.getItem('userName');
+    const lines = _.reject(this.state.users, { name: userName }).map(({ name, playing }) => (
+      <tr>
+        <td>{name}</td>
+        <td>0</td>
+        <td>
+          {playing ? <button className="btn btn-primary" onClick={this.onClick.bind(this, name)}>Assistir</button> : null}
+        </td>
+      </tr>
     ));
 
     return (
       <div>
-        {lines}
+        <div id="rank" className="table-responsive">
+          <table className="table table-striped" cellSpacing="0" cellPadding="0">
+            <thead>
+              <tr>
+                <th className="text-center">Nome</th>
+                <th className="text-center">Pontuação</th>
+                <th className="text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {lines}
+            </tbody>
+          </table>
+        </div>
         {this.state.currentUser ? <Watch userName={this.state.currentUser} /> : null}
       </div>
     );

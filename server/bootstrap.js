@@ -1,5 +1,6 @@
 const express = require('express');
 const http = require('http');
+const _ = require('lodash/fp');
 
 const PORT = process.env.PORT || 8080;
 const app = express();
@@ -9,10 +10,15 @@ const io = require('socket.io')(server);
 const createServer = path => {
   const sockets = {};
 
+  const getUsers = () => _.flow(
+    _.values,
+    _.map(_.pick(['name', 'playing'])),
+  )(sockets);
+
   app.use(express.static(path));
 
   app.get('/users', (request, response) => {
-    response.json(Object.keys(sockets));
+    response.json(getUsers());
   });
 
   app.get('*', (request, response) => {
@@ -24,8 +30,18 @@ const createServer = path => {
       sockets[userName] = socket;
       socket.name = userName;
 
-      io.emit('login', Object.keys(sockets));
+      io.emit('users:update', getUsers());
       console.log(`io: a user connected - ${userName}`);
+    });
+
+    socket.on('game:start', () => {
+      socket.playing = true;
+      io.emit('users:update', getUsers());
+    });
+
+    socket.on('game:end', () => {
+      socket.playing = false;
+      io.emit('users:update', getUsers());
     });
 
     socket.on('disconnect', () => {
@@ -38,6 +54,24 @@ const createServer = path => {
 
       if (sockets[observableId]) {
         sockets[observableId].emit('observer:start', socket.name);
+      }
+    });
+
+    socket.on('observer:request:control', observableId => {
+      if (sockets[observableId]) {
+        sockets[observableId].emit('observer:request:control', socket.name);
+      }
+    });
+
+    socket.on('observer:moving', ({ observableId, object }) => {
+      if (sockets[observableId]) {
+        sockets[observableId].emit('observer:moving', object);
+      }
+    });
+
+    socket.on('observable:request:control:response', ({ observerId, response }) => {
+      if (sockets[observerId]) {
+        sockets[observerId].emit('observable:request:control:response', response);
       }
     });
 
