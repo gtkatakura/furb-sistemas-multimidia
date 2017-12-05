@@ -56,14 +56,14 @@ class Base extends React.Component {
     const polygons = this.props.polygons.map((object, key) => (
       <Polygon
         key={key.toString()}
-        object={_.assign({}, object)}
+        object={_.assign({ hasControls: false }, object)}
       />
     ));
 
     const objects = this.props.objects.map((object, key) => (
       <Polygon
         key={key.toString()}
-        object={_.assign({}, object)}
+        object={_.assign({ hasControls: false }, object)}
         onMoving={_.partial(this.onMoving, this)}
       />
     ));
