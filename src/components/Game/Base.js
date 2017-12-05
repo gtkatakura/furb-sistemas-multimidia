@@ -53,14 +53,7 @@ class Base extends React.Component {
   }
 
   render() {
-    const polygons = this.props.polygons.map((object, key) => (
-      <Polygon
-        key={key.toString()}
-        object={_.assign({ hasControls: false }, object)}
-      />
-    ));
-
-    const objects = this.props.objects.map((object, key) => (
+    const objects = this.props.polygons.concat(this.props.objects).map((object, key) => (
       <Polygon
         key={key.toString()}
         object={_.assign({ hasControls: false }, object)}
@@ -71,7 +64,6 @@ class Base extends React.Component {
     return (
       <div id="game">
         <Canvas width={this.props.width} height={this.props.height} ref={canvas => { this.canvas = canvas; }}>
-          {polygons}
           {objects}
         </Canvas>
       </div>

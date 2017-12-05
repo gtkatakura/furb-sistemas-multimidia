@@ -38,27 +38,11 @@ class Game extends React.Component {
 
     this.props.socket.on('observer:moving', object => this.game.updateObject(object));
 
-    const maxY = _.max(_.map(this.state.exercise[0].points, 'y')) / 2;
-    const maxX = _.max(_.map(this.state.exercise[0].points, 'x')) / 2;
-
-    this.polygons = this.state.exercise.map(object => (
-      Object.assign({}, _.cloneDeep(object), {
-        selectable: false,
-        fill: 'black',
-        top: (this.props.height / 2) - maxY + object.top,
-        left: (this.props.width / 2) - maxX + object.left,
-      })
-    ));
-
-    this.objects = _.drop(this.state.exercise, 1).map((object, reference) => (
-      Object.assign({}, _.cloneDeep(object), this.buildRandomPositions(object, maxX, maxY), {
-        reference,
-      })
-    ));
+    this.setExercise(this.props.exercise);
   }
 
   componentWillReceiveProps({ exercise }) {
-    this.setState({ exercise });
+    this.setExercise(exercise);
   }
 
   componentWillUnmount() {
@@ -122,6 +106,28 @@ class Game extends React.Component {
     }
 
     return positions;
+  }
+
+  setExercise(exercise) {
+    const maxY = _.max(_.map(exercise[0].points, 'y')) / 2;
+    const maxX = _.max(_.map(exercise[0].points, 'x')) / 2;
+
+    this.polygons = exercise.map(object => (
+      Object.assign({}, _.cloneDeep(object), {
+        selectable: false,
+        fill: 'black',
+        top: (this.props.height / 2) - maxY + object.top,
+        left: (this.props.width / 2) - maxX + object.left,
+      })
+    ));
+
+    this.objects = _.drop(exercise, 1).map((object, reference) => (
+      Object.assign({}, _.cloneDeep(object), this.buildRandomPositions(object, maxX, maxY), {
+        reference,
+      })
+    ));
+
+    this.setState({ exercise });
   }
 
   render() {
