@@ -34,12 +34,12 @@ class Rank extends React.Component {
 
   render() {
     const userName = sessionStorage.getItem('userName');
-    const lines = _.reject(this.state.users, { name: userName }).map(({ name, playing }) => (
-      <tr>
+    const lines = this.state.users.map(({ name, playing }, key) => (
+      <tr key={key.toString()}>
         <td>{name}</td>
         <td>0</td>
         <td>
-          {playing ? <button className="btn btn-primary" onClick={this.onClick.bind(this, name)}>Assistir</button> : null}
+          {playing && name !== userName ? <button className="btn btn-primary" onClick={this.onClick.bind(this, name)}>Assistir</button> : null}
         </td>
       </tr>
     ));

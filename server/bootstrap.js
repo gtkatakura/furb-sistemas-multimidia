@@ -75,6 +75,12 @@ const createServer = path => {
       }
     });
 
+    socket.on('observable:request:control:stop', ({ observerId }) => {
+      if (sockets[observerId]) {
+        sockets[observerId].emit('observable:request:control:stop');
+      }
+    });
+
     socket.on('observable:bootstrap', ({ observerId, objects }) => {
       if (sockets[observerId]) {
         sockets[observerId].emit('observable:bootstrap', objects);

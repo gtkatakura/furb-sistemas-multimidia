@@ -1,7 +1,8 @@
 import React from 'react';
-import { Canvas, Polygon } from 'react-fabricjs';
+import PropTypes from 'prop-types';
 import { socketConnect } from 'socket.io-react';
 import _ from 'lodash';
+import Base from './Base';
 
 import './index.less';
 
@@ -27,36 +28,17 @@ class Watch extends React.Component {
   onPermitControl() {
     if (!this.state.requestControl) {
       this.props.socket.emit('observer:request:control', this.props.userName);
+
       this.setState({
         requestControl: true,
       });
     }
   }
 
-  onMoving(game) {
-    if (this.canvas) {
-      this.canvas.forEachObject(obj => {
-        if (obj === this) return;
-
-        if (Math.abs(obj.top - this.top) < 10 && Math.abs(obj.left - this.left) < 10) {
-          this.set({
-            top: obj.top,
-            left: obj.left,
-          });
-        }
-      });
-
-      game.props.socket.emit('observer:moving', {
-        observableId: game.props.userName,
-        object: _.assign({}, this),
-      });
-    }
-
-    const local = _.find(game.objects, ['reference', this.reference]);
-
-    _.assign(local, {
-      top: this.top,
-      left: this.left,
+  onMoving(object) {
+    this.props.socket.emit('observer:moving', {
+      observableId: this.props.userName,
+      object: _.assign({}, object),
     });
   }
 
@@ -69,16 +51,7 @@ class Watch extends React.Component {
       });
     });
 
-    this.props.socket.on('observable:moving', object => {
-      const local = this.canvas.getObjects().find(currentObject => currentObject.reference === object.reference);
-
-      local.set({
-        left: object.left,
-        top: object.top,
-      });
-
-      this.canvas.renderAll();
-    });
+    this.props.socket.on('observable:moving', object => this.game.updateObject(object));
 
     this.props.socket.on('observable:request:control:response', response => {
       if (response) {
@@ -91,16 +64,27 @@ class Watch extends React.Component {
         });
       }
     });
+
+    this.props.socket.on('observable:request:control:stop', () => {
+      this.setState({
+        requestControl: false,
+        inControl: false,
+      });
+    });
+  }
+
+  controlStatus() {
+    if (this.state.requestControl) {
+      return this.state.inControl ? 'Conectado' : 'Aguardando resposta';
+    }
+
+    return 'Pedir controle';
   }
 
   render() {
-    this.objects = this.state.objects.map((object, key) => (
-      <Polygon
-        key={key.toString()}
-        object={Object.assign({}, object, (!this.state.inControl || !_.isNumber(object.reference)) ? { selectable: false } : { selectable: true })}
-        onMoving={_.partial(this.onMoving, this)}
-      />
-    ));
+    this.state.objects.forEach(object => Object.assign(object, {
+      selectable: this.state.inControl && _.isNumber(object.reference),
+    }));
 
     return (
       <div id="game-container">
@@ -108,16 +92,24 @@ class Watch extends React.Component {
           <div className="alert alert-success">
             Você está assistindo: <strong>{this.props.userName}</strong>
           </div>
-          <button className="btn btn-primary" onClick={this.onPermitControl.bind(this)}>{this.state.requestControl ? 'Aguardando resposta' : 'Pedir controle'}</button>
+          <button className="btn btn-primary" onClick={this.onPermitControl.bind(this)}>{this.controlStatus()}</button>
         </div>
         <div id="game">
-          <Canvas width={600} height={600} ref={canvas => { this.canvas = canvas; }}>
-            {this.objects}
-          </Canvas>
+          <Base
+            ref={game => { this.game = game; }}
+            width={600}
+            height={600}
+            objects={this.state.objects}
+            onMoving={this.onMoving.bind(this)}
+          />
         </div>
       </div>
     );
   }
 }
+
+Watch.propTypes = {
+  userName: PropTypes.string.isRequired,
+};
 
 export default socketConnect(Watch);

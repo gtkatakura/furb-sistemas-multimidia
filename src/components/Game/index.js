@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Canvas, Polygon } from 'react-fabricjs';
 import _ from 'lodash';
 import { socketConnect } from 'socket.io-react';
+import Base from './Base';
+import RequestControl from './RequestControl';
 
 import './index.less';
 
@@ -21,7 +22,7 @@ class Game extends React.Component {
     this.props.socket.emit('game:start');
 
     this.props.socket.on('observer:start', observerId => {
-      const objects = this.canvas.getObjects().map(object => _.assign({}, object));
+      const objects = this.game.getObjects().map(object => _.assign({}, object));
 
       this.props.socket.emit('observable:bootstrap', {
         observerId,
@@ -35,16 +36,7 @@ class Game extends React.Component {
       });
     });
 
-    this.props.socket.on('observer:moving', object => {
-      const local = this.canvas.getObjects().find(currentObject => currentObject.reference === object.reference);
-
-      local.set({
-        left: object.left,
-        top: object.top,
-      });
-
-      this.canvas.renderAll();
-    });
+    this.props.socket.on('observer:moving', object => this.game.updateObject(object));
 
     const maxY = _.max(_.map(this.state.exercise[0].points, 'y')) / 2;
     const maxX = _.max(_.map(this.state.exercise[0].points, 'x')) / 2;
@@ -73,50 +65,21 @@ class Game extends React.Component {
     this.props.socket.emit('game:end');
   }
 
-  onMoving(game) {
-    if (this.canvas) {
-      this.canvas.forEachObject(obj => {
-        if (obj === this) return;
+  onMoving(object) {
+    this.props.socket.emit('observable:moving', _.assign({}, object));
+  }
 
-        if (Math.abs(obj.top - this.top) < 10 && Math.abs(obj.left - this.left) < 10) {
-          this.set({
-            top: obj.top,
-            left: obj.left,
-          });
-        }
+  onRequestControlResponse(response) {
+    if (!response) {
+      this.setState({
+        requestControl: null,
       });
-
-      game.props.socket.emit('observable:moving', _.assign({}, this));
     }
-
-    const local = _.find(game.objects, ['reference', this.reference]);
-
-    _.assign(local, {
-      top: this.top,
-      left: this.left,
-    });
   }
 
-  onRequestControlAccept() {
-    this.props.socket.emit('observable:request:control:response', {
-      observerId: this.state.requestControl,
-      response: true,
-    });
-
-    this.setState({
-      requestControlAccepted: true,
-    });
-  }
-
-  onRequestControlReject() {
-    this.props.socket.emit('observable:request:control:response', {
-      observerId: this.state.requestControl,
-      response: false,
-    });
-
+  onRequestControlStop() {
     this.setState({
       requestControl: null,
-      requestControlAccepted: false,
     });
   }
 
@@ -162,35 +125,24 @@ class Game extends React.Component {
   }
 
   render() {
-    const polygons = this.polygons.map((object, key) => (
-      <Polygon
-        key={key.toString()}
-        object={object}
-      />
-    ));
-
-    const objects = this.objects.map((object, key) => (
-      <Polygon
-        key={key.toString()}
-        object={object}
-        onMoving={_.partial(this.onMoving, this)}
-      />
-    ));
-
     return (
       <div>
         {this.state.requestControl ? (
-          <p style={{ display: 'inline-block', width: '50%' }} className="alert alert-warning">
-            O usuário {this.state.requestControl} pediu permissão para controlar o jogo. Deseja passar o controle?<br />
-            <button className="btn btn-primary" onClick={this.onRequestControlAccept.bind(this)}>Sim</button>
-            <button className="btn btn-danger" onClick={this.onRequestControlReject.bind(this)}>Não</button>
-          </p>
+          <RequestControl
+            userName={this.state.requestControl}
+            onResponse={this.onRequestControlResponse.bind(this)}
+            onStop={this.onRequestControlStop.bind(this)}
+          />
         ) : null}
         <div id="game">
-          <Canvas width={this.props.width} height={this.props.height} ref={el => { this.canvas = el; }}>
-            {polygons}
-            {objects}
-          </Canvas>
+          <Base
+            ref={game => { this.game = game; }}
+            width={this.props.width}
+            height={this.props.height}
+            objects={this.objects}
+            polygons={this.polygons}
+            onMoving={this.onMoving.bind(this)}
+          />
         </div>
       </div>
     );
