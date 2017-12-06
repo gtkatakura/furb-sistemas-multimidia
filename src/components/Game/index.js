@@ -77,7 +77,7 @@ class Game extends React.Component {
     const maxY = _.max(_.map(exercise[0].points, 'y')) / 2;
     const maxX = _.max(_.map(exercise[0].points, 'x')) / 2;
 
-    this.polygons = exercise.map(object => (
+    this.polygons = _.filter(exercise, el => !el._distraction).map(object => (
       Object.assign({}, _.cloneDeep(object), {
         _fill: object.fill,
         selectable: false,

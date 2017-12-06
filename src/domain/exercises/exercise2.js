@@ -127,4 +127,32 @@ export default [
     fill: 'lime',
     _group: 'Forma concova',
   },
+  {
+    points: [
+      { x: 0, y: 200 / 3 },
+      { x: (200 / 3) / 2, y: 0 },
+      { x: (200 / 3) * 1.5, y: 0 },
+      { x: (200 / 3) * 2, y: 200 / 3 },
+      { x: (200 / 3) * 1.5, y: (200 / 3) * 2 },
+      { x: (200 / 3) * 0.5, y: (200 / 3) * 2 },
+    ],
+    left: 0,
+    top: 0,
+    fill: 'blueviolet',
+    _group: 'xpto',
+    _distraction: true,
+  },
+  {
+    points: [
+      { x: 0, y: 0 },
+      { x: 0, y: (200 / 3) },
+      { x: (200 / 3) * 2, y: (200 / 3) },
+      { x: (200 / 3) * 2, y: 0 },
+    ],
+    left: 0,
+    top: 0,
+    fill: 'pink',
+    _group: 'Retângulo',
+    _distraction: true,
+  },
 ];

@@ -31,6 +31,8 @@ class Base extends React.Component {
       const object = _.find(game.props.objects, ['reference', this.reference]);
       const refs = game.getObjects().filter(el => !Number.isInteger(el.reference)).slice(1);
 
+      let changeResolveds = false;
+
       this.canvas.forEachObject(obj => {
         if (obj === this) return;
 
@@ -41,9 +43,14 @@ class Base extends React.Component {
           });
 
           if (obj._fill === this.fill && !_.some(game.state.resolveds[object._group].current, ['_fill', obj._fill])) {
+            changeResolveds = true;
             game.state.resolveds[object._group].current.push(obj);
           }
         } else if (obj._fill === this.fill && obj.fill === 'black') {
+          if (_.find(game.state.resolveds[object._group].current, ['_fill', obj._fill])) {
+            changeResolveds = true;
+          }
+
           _.remove(game.state.resolveds[object._group].current, ['_fill', obj._fill]);
         }
       });
@@ -55,7 +62,9 @@ class Base extends React.Component {
 
       game.props.onMoving(this);
 
-      game.updateResolveds();
+      if (changeResolveds) {
+        game.updateResolveds();
+      }
     }
   }
 
@@ -99,7 +108,9 @@ class Base extends React.Component {
 
   buildResolveds({ objects, resolveds }) {
     if (_.isEmpty(resolveds) || (this.state.objects !== objects && !_.isEmpty(this.state.resolveds))) {
-      _.assign(resolveds, _.mapValues(_.groupBy(objects, '_group'), value => ({
+      _.keys(resolveds).forEach(key => delete resolveds[key]);
+
+      _.assign(resolveds, _.mapValues(_.groupBy(_.filter(objects, el => !el._distraction), '_group'), value => ({
         expected: value,
         current: [],
       })));
