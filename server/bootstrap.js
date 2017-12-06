@@ -46,6 +46,7 @@ const createServer = path => {
 
     socket.on('disconnect', () => {
       delete sockets[socket.name];
+      io.emit('users:update', getUsers());
       console.log(`io: a user disconnected - ${socket.name}`);
     });
 
