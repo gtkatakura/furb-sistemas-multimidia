@@ -42,7 +42,7 @@ export default [
     left: 50,
     top: 50,
     fill: 'cyan',
-    _group: 'Losango',
+    _group: 'Triângulo',
   },
   {
     points: [
