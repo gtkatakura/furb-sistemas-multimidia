@@ -1,11 +1,25 @@
 #game-container {
-  display: inline-block;
   width: 100%;
+  display: flex;
+  margin: 0 auto;
 }
 
-#game {
+#game-left {
+  width: 25%;
+}
+
+#game-canvas {
+  width: 45%;
   display: table;
   margin: 0 auto;
+}
+
+#game-canvas div {
+  float: center;
+}
+
+#game-canvas .canvas-container {
+  float: left;
   background-color: white;
   border-top-left-radius: 20px 50px;
   border-top-right-radius: 20px 50px;
@@ -13,7 +27,18 @@
   border-bottom-left-radius: 20px 50px;
 }
 
-#game-message {
-  display: inline-block;
-  width: 50%;
+#game-help {
+  background-color: white;
+  width: 30%;
+  height: 200px;
+  margin: 0 auto;
+  border-top-left-radius: 20px 50px;
+  border-top-right-radius: 20px 50px;
+  border-bottom-right-radius: 20px 50px;
+  border-bottom-left-radius: 20px 50px;
+}
+
+.game-help-item {
+  margin-left: 10px;
+  text-align: left;
 }

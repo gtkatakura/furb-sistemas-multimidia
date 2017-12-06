@@ -19,16 +19,19 @@ export default [
     left: 0,
     top: 0,
     fill: 'purple',
+    _group: 'Triângulo',
   },
   {
     points: [
       { x: 0, y: 0 },
-      { x: 0, y: 200 / 3 },
       { x: 200 / 3, y: 200 / 3 },
+      { x: (200 / 3) / 2, y: (200 / 3) * 2 },
+      { x: 0, y: (200 / 3) * 2 },
     ],
     left: 0,
     top: 0,
     fill: 'yellow',
+    _group: 'Forma concova',
   },
   {
     points: [
@@ -40,6 +43,7 @@ export default [
     left: 200 / 3,
     top: 0,
     fill: 'cyan',
+    _group: 'Quadrado',
   },
   {
     points: [
@@ -50,6 +54,7 @@ export default [
     left: (200 / 3) * 2,
     top: 0,
     fill: 'green',
+    _group: 'Triângulo',
   },
   {
     points: [
@@ -60,17 +65,7 @@ export default [
     left: (200 / 3) * 2,
     top: 0,
     fill: 'blue',
-  },
-  {
-    points: [
-      { x: 0, y: 0 },
-      { x: 200 / 3, y: 0 },
-      { x: (200 / 3) / 2, y: 200 / 3 },
-      { x: 0, y: 200 / 3 },
-    ],
-    left: 0,
-    top: 200 / 3,
-    fill: 'red',
+    _group: 'Triângulo',
   },
   {
     points: [
@@ -82,6 +77,7 @@ export default [
     left: (200 / 3) / 2,
     top: (200 / 3),
     fill: 'brown',
+    _group: 'Trapézio',
   },
   {
     points: [
@@ -93,6 +89,7 @@ export default [
     left: (200 / 3) * 2,
     top: (200 / 3),
     fill: 'gold',
+    _group: 'Forma concova',
   },
   {
     points: [
@@ -104,6 +101,7 @@ export default [
     left: 0,
     top: (200 / 3) * 2,
     fill: 'khaki',
+    _group: 'Forma concova',
   },
   {
     points: [
@@ -115,6 +113,7 @@ export default [
     left: (200 / 3) * 0.5,
     top: (200 / 3) * 2,
     fill: 'lightblue',
+    _group: 'Trapézio',
   },
   {
     points: [
@@ -126,5 +125,6 @@ export default [
     left: (200 / 3) * 2,
     top: (200 / 3) * 2,
     fill: 'lime',
+    _group: 'Forma concova',
   },
 ];

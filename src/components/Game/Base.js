@@ -6,8 +6,29 @@ import _ from 'lodash';
 import './index.less';
 
 class Base extends React.Component {
+  constructor(...args) {
+    super(...args);
+
+    this.state = {
+      resolveds: {},
+    };
+
+    this.updateResolveds = _.debounce(this.updateResolveds, 300);
+  }
+
+  componentWillMount() {
+    this.buildResolveds(this.props);
+  }
+
+  componentWillReceiveProps(newProps) {
+    this.buildResolveds(newProps);
+  }
+
   onMoving(game) {
     if (this.canvas) {
+      const object = _.find(game.props.objects, ['reference', this.reference]);
+      const refs = game.getObjects().filter(el => !Number.isInteger(el.reference)).slice(1);
+
       this.canvas.forEachObject(obj => {
         if (obj === this) return;
 
@@ -16,10 +37,14 @@ class Base extends React.Component {
             top: obj.top,
             left: obj.left,
           });
+
+          if (obj._fill === this.fill && !_.some(game.state.resolveds[object._group].current, ['_fill', obj._fill])) {
+            game.state.resolveds[object._group].current.push(obj);
+          }
+        } else if (obj._fill === this.fill && obj.fill === 'black') {
+          _.remove(game.state.resolveds[object._group].current, ['_fill', obj._fill]);
         }
       });
-
-      const object = _.find(game.props.objects, ['reference', this.reference]);
 
       _.assign(object, {
         top: this.top,
@@ -27,11 +52,19 @@ class Base extends React.Component {
       });
 
       game.props.onMoving(this);
+
+      game.updateResolveds();
     }
   }
 
   getObjects() {
     return this.canvas.getObjects();
+  }
+
+  updateResolveds() {
+    this.setState({
+      resolveds: this.state.resolveds,
+    });
   }
 
   updateObject(object) {
@@ -52,6 +85,15 @@ class Base extends React.Component {
     this.canvas.renderAll();
   }
 
+  buildResolveds({ objects }) {
+    const resolveds = _.mapValues(_.groupBy(objects, '_group'), value => ({
+      expected: value,
+      current: [],
+    }));
+
+    this.setState({ resolveds });
+  }
+
   render() {
     const objects = this.props.polygons.concat(this.props.objects).map((object, key) => (
       <Polygon
@@ -61,11 +103,24 @@ class Base extends React.Component {
       />
     ));
 
+    const helpItems = _.map(this.state.resolveds, (data, format) => (
+      <p key={format} className="game-help-item">- {format}: {data.current.length} de {String(data.expected.length)}</p>
+    ));
+
     return (
-      <div id="game">
-        <Canvas width={this.props.width} height={this.props.height} ref={canvas => { this.canvas = canvas; }}>
-          {objects}
-        </Canvas>
+      <div id="game-container">
+        <div id="game-left" />
+        <div id="game-canvas">
+          <Canvas width={this.props.width} height={this.props.height} ref={canvas => { this.canvas = canvas; }}>
+            {objects}
+          </Canvas>
+        </div>
+        <div id="game-help">
+          <p>
+            <h4>Resolva o problema utilizando:</h4>
+            {helpItems}
+          </p>
+        </div>
       </div>
     );
   }

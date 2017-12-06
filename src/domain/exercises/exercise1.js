@@ -8,7 +8,7 @@ export default [
     ],
     left: 0,
     top: 0,
-    fill: 'red',
+    fill: 'black',
   },
   {
     points: [
@@ -19,6 +19,7 @@ export default [
     left: 0,
     top: 0,
     fill: 'purple',
+    _group: 'Triângulo',
   },
   {
     points: [
@@ -29,6 +30,7 @@ export default [
     left: 0,
     top: 0,
     fill: 'yellow',
+    _group: 'Triângulo',
   },
   {
     points: [
@@ -40,6 +42,7 @@ export default [
     left: 0,
     top: 50,
     fill: 'cyan',
+    _group: 'Losango',
   },
   {
     points: [
@@ -50,6 +53,7 @@ export default [
     left: 0,
     top: 100,
     fill: 'green',
+    _group: 'Triângulo',
   },
   {
     points: [
@@ -61,6 +65,7 @@ export default [
     left: 50,
     top: 100,
     fill: 'blue',
+    _group: 'Losango',
   },
   {
     points: [
@@ -71,6 +76,7 @@ export default [
     left: 100,
     top: 0,
     fill: 'red',
+    _group: 'Triângulo',
   },
   {
     points: [
@@ -81,5 +87,6 @@ export default [
     left: 100,
     top: 150,
     fill: 'pink',
+    _group: 'Triângulo',
   },
 ];
