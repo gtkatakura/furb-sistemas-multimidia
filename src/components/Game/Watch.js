@@ -10,6 +10,8 @@ class Watch extends React.Component {
   constructor() {
     super();
 
+    this.onMoving = _.throttle(this.onMoving, 100);
+
     this.state = {
       inControl: false,
       requestControl: false,

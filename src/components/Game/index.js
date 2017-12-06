@@ -11,6 +11,8 @@ class Game extends React.Component {
   constructor({ exercise }) {
     super();
 
+    this.onMoving = _.throttle(this.onMoving, 100);
+
     this.state = {
       resolveds: {},
       requestControl: null,
