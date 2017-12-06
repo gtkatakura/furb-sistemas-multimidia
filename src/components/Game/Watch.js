@@ -57,7 +57,7 @@ class Watch extends React.Component {
 
     this.props.socket.on('observable:bootstrap', ({ objects, resolveds }) => {
       this.setState({
-        objects: objects.map(object => _.pick(object, ['points', 'fill', 'height', 'width', 'left', 'top', 'reference', '_fill', '_group'])),
+        objects: objects.map(object => _.pick(object, ['points', 'fill', 'height', 'width', 'left', 'top', 'reference', '_fill', '_group', '_distraction'])),
         resolveds,
       });
     });

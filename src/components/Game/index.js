@@ -14,6 +14,7 @@ class Game extends React.Component {
     this.onMoving = _.throttle(this.onMoving, 100);
 
     this.state = {
+      observerId: null,
       resolveds: {},
       requestControl: null,
       exercise,
@@ -24,6 +25,7 @@ class Game extends React.Component {
     this.props.socket.emit('game:start');
 
     this.props.socket.on('observer:start', observerId => {
+      this.state.observerId = observerId;
       const objects = this.game.getObjects().map(object => _.assign({}, object));
 
       this.props.socket.emit('observable:bootstrap', {
@@ -45,8 +47,9 @@ class Game extends React.Component {
     this.setExercise(this.props.exercise);
   }
 
-  componentWillReceiveProps({ exercise }) {
-    this.setExercise(exercise);
+  async componentWillReceiveProps({ exercise }) {
+    await this.setExercise(exercise);
+    this.emitBootstrap();
   }
 
   componentWillUnmount() {
@@ -75,13 +78,14 @@ class Game extends React.Component {
     });
   }
 
-  setExercise(exercise) {
+  async setExercise(exercise) {
     const maxY = _.max(_.map(exercise[0].points, 'y')) / 2;
     const maxX = _.max(_.map(exercise[0].points, 'x')) / 2;
 
     this.polygons = _.filter(exercise, el => !el._distraction).map(object => (
       Object.assign({}, _.cloneDeep(object), {
         _fill: object.fill,
+        _distraction: true,
         selectable: false,
         fill: 'black',
         top: (this.props.height / 2) - maxY + object.top,
@@ -95,7 +99,17 @@ class Game extends React.Component {
       })
     ));
 
-    this.setState({ exercise });
+    await this.setState({ exercise });
+  }
+
+  emitBootstrap() {
+    const objects = this.game.getObjects().map(object => _.assign({}, object));
+
+    this.props.socket.emit('observable:bootstrap', {
+      observerId: this.state.observerId,
+      resolveds: this.game.state.resolveds,
+      objects,
+    });
   }
 
   buildRandomPositions(object, maxX, maxY) {
