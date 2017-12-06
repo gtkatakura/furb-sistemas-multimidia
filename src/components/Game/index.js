@@ -12,7 +12,7 @@ class Game extends React.Component {
     super();
 
     this.state = {
-      requestControlAccepted: false,
+      resolveds: {},
       requestControl: null,
       exercise,
     };
@@ -27,6 +27,7 @@ class Game extends React.Component {
       this.props.socket.emit('observable:bootstrap', {
         observerId,
         objects,
+        resolveds: this.game.state.resolveds,
       });
     });
 
@@ -37,6 +38,7 @@ class Game extends React.Component {
     });
 
     this.props.socket.on('observer:moving', object => this.game.updateObject(object));
+    this.props.socket.on('observer:resolveds', resolveds => this.setState({ resolveds }));
 
     this.setExercise(this.props.exercise);
   }
@@ -51,6 +53,10 @@ class Game extends React.Component {
 
   onMoving(object) {
     this.props.socket.emit('observable:moving', _.assign({}, object));
+  }
+
+  onItemResolve(resolveds) {
+    this.props.socket.emit('observable:resolveds', resolveds);
   }
 
   onRequestControlResponse(response) {
@@ -148,7 +154,9 @@ class Game extends React.Component {
             height={this.props.height}
             objects={this.objects}
             polygons={this.polygons}
+            resolveds={this.state.resolveds}
             onMoving={this.onMoving.bind(this)}
+            onItemResolve={this.onItemResolve.bind(this)}
           />
         </div>
       </div>

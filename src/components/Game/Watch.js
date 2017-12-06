@@ -14,6 +14,7 @@ class Watch extends React.Component {
       inControl: false,
       requestControl: false,
       objects: [],
+      resolveds: [],
     };
   }
 
@@ -42,16 +43,25 @@ class Watch extends React.Component {
     });
   }
 
+  onItemResolve(resolveds) {
+    this.props.socket.emit('observer:resolveds', {
+      observableId: this.props.userName,
+      resolveds,
+    });
+  }
+
   startObserver(props) {
     this.props.socket.emit('observer:start', props.userName);
 
-    this.props.socket.on('observable:bootstrap', objects => {
+    this.props.socket.on('observable:bootstrap', ({ objects, resolveds }) => {
       this.setState({
-        objects: objects.map(object => _.pick(object, ['points', 'fill', 'height', 'width', 'left', 'top', 'reference'])),
+        objects: objects.map(object => _.pick(object, ['points', 'fill', 'height', 'width', 'left', 'top', 'reference', '_fill', '_group'])),
+        resolveds,
       });
     });
 
     this.props.socket.on('observable:moving', object => this.game.updateObject(object));
+    this.props.socket.on('observable:resolveds', resolveds => this.setState({ resolveds }));
 
     this.props.socket.on('observable:request:control:response', response => {
       if (response) {
@@ -87,8 +97,8 @@ class Watch extends React.Component {
     }));
 
     return (
-      <div id="game-container">
-        <div id="game-message">
+      <div id="watch-container">
+        <div id="watch-message">
           <div className="alert alert-success">
             Você está assistindo: <strong>{this.props.userName}</strong>
           </div>
@@ -100,7 +110,9 @@ class Watch extends React.Component {
             width={600}
             height={600}
             objects={this.state.objects}
+            resolveds={this.state.resolveds}
             onMoving={this.onMoving.bind(this)}
+            onItemResolve={this.onItemResolve.bind(this)}
           />
         </div>
       </div>

@@ -69,6 +69,12 @@ const createServer = path => {
       }
     });
 
+    socket.on('observer:resolveds', ({ observableId, resolveds }) => {
+      if (sockets[observableId]) {
+        sockets[observableId].emit('observer:resolveds', resolveds);
+      }
+    });
+
     socket.on('observable:request:control:response', ({ observerId, response }) => {
       if (sockets[observerId]) {
         sockets[observerId].emit('observable:request:control:response', response);
@@ -81,14 +87,18 @@ const createServer = path => {
       }
     });
 
-    socket.on('observable:bootstrap', ({ observerId, objects }) => {
+    socket.on('observable:bootstrap', ({ observerId, objects, resolveds }) => {
       if (sockets[observerId]) {
-        sockets[observerId].emit('observable:bootstrap', objects);
+        sockets[observerId].emit('observable:bootstrap', { objects, resolveds });
       }
     });
 
     socket.on('observable:moving', object => {
       io.to(`observable:${socket.name}`).emit('observable:moving', object);
+    });
+
+    socket.on('observable:resolveds', resolveds => {
+      io.to(`observable:${socket.name}`).emit('observable:resolveds', resolveds);
     });
   });
 

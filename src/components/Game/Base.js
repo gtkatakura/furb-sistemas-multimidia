@@ -10,6 +10,8 @@ class Base extends React.Component {
     super(...args);
 
     this.state = {
+      finished: false,
+      objects: null,
       resolveds: {},
     };
 
@@ -62,9 +64,19 @@ class Base extends React.Component {
   }
 
   updateResolveds() {
+    const itemComplete = ({ expected, current }) => expected.length === current.length;
+
     this.setState({
+      finished: _.values(this.state.resolveds).every(itemComplete),
       resolveds: this.state.resolveds,
     });
+
+    this.props.onItemResolve(
+      _.mapValues(
+        this.state.resolveds,
+        values => _.mapValues(values, arr => arr.map(value => _.assign({}, value))),
+      ),
+    );
   }
 
   updateObject(object) {
@@ -85,13 +97,15 @@ class Base extends React.Component {
     this.canvas.renderAll();
   }
 
-  buildResolveds({ objects }) {
-    const resolveds = _.mapValues(_.groupBy(objects, '_group'), value => ({
-      expected: value,
-      current: [],
-    }));
+  buildResolveds({ objects, resolveds }) {
+    if (_.isEmpty(resolveds) || (this.state.objects !== objects && !_.isEmpty(this.state.resolveds))) {
+      _.assign(resolveds, _.mapValues(_.groupBy(objects, '_group'), value => ({
+        expected: value,
+        current: [],
+      })));
+    }
 
-    this.setState({ resolveds });
+    this.setState({ resolveds, objects });
   }
 
   render() {
@@ -120,6 +134,7 @@ class Base extends React.Component {
             <h4>Resolva o problema utilizando:</h4>
             {helpItems}
           </p>
+          {this.state.finished ? <button className="btn btn-success">Resolvido!</button> : null}
         </div>
       </div>
     );
@@ -132,11 +147,13 @@ Base.propTypes = {
   height: PropTypes.number.isRequired,
   width: PropTypes.number.isRequired,
   onMoving: PropTypes.func,
+  onItemResolve: PropTypes.func,
 };
 
 Base.defaultProps = {
   polygons: [],
   onMoving: _.noop,
+  onItemResolve: _.noop,
 };
 
 export default Base;
